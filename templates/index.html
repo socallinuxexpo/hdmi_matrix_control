@@ -1,0 +1,29 @@
+<html>
+<head>
+  <title>{{ matrix.name }} Control Interface</title>
+  <link rel="stylesheet" media="screen" href="../static/css/segment7.css" type="text/css"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript">
+
+  $(document).ready(function(){
+    $( ".target" ).change(function() {
+      alert( $(this).attr('id') + "==" + $(this).val() );
+    });
+    url="outputs"
+    $.getJSON(url, function(response) {
+      alert(response['outputs']);
+    });
+  });
+  </script>
+</head>
+<body>
+
+{% for output in range(1, matrix.num_outputs+1) %}
+<select class="target" id="output_{{output}}">
+{% for input in range(1, matrix.num_inputs+1) %}
+   <option value="{{input}}"{% if matrix.getOutput(output)==input %} selected="selected"{% endif %}>{{input}}</option>
+{% endfor %}
+</select>
+{% endfor %}
+</body>
+</html>

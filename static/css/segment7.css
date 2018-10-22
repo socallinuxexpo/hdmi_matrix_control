@@ -1,0 +1,25 @@
+@font-face {
+    font-family: 'Segment7Standard';
+        src: url('../font/Segment7Standard.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+      }
+
+ /* The following rules are deprecated. */ 
+
+@font-face {
+    font-family: 'Segment7';
+        src: url('../font/Segment7Standard.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+      }
+
+select { 
+   font-family: 'Segment7Standard'; 
+   font-weight: normal; 
+   font-style: italic; 
+   font-size: +6em;
+   color: blue;
+   background-color: black;
+}
+
