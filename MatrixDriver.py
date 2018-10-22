@@ -3,6 +3,7 @@ import threading
 import logging
 import random
 import simplejson as json
+from time import sleep
 
 class MatrixDriver(threading.Thread):
   running = True
@@ -11,7 +12,7 @@ class MatrixDriver(threading.Thread):
     self.serial_port = serial_port
     self.num_inputs=4
     self.num_outputs=4
-    self.status = [0,random.randint(1, 5), random.randint(1, 5), random.randint(1, 5), random.randint(1, 5)]
+    self.status = [0,random.randint(1, 4), random.randint(1, 4), random.randint(1, 4), random.randint(1, 4)]
   def process(self, statusStr):
     logging.debug("process got [%s]" % statusStr)
   def getOutput(self, port):
@@ -19,17 +20,12 @@ class MatrixDriver(threading.Thread):
     return self.status[port]
   def setOutput(self, outport, inport):
      logging.debug( "setOutput got set %s to %s" % (outport, inport) )
+     self.status[outport] = inport
   def run(self):
     logging.debug( "Run loop starting." )
     while self.running:
       logging.debug( "Start of loop" )
-      t = self.serial_port.read(48)
-      if len(t) == 48:
-        self.process(t)
-        logging.info( "[" + str(self.getOutput(1)) + "] [" + 
-		      str(self.getOutput(2)) + "] [" + str(self.getOutput(3)) + "] [" + str(self.getOutput(4)) + "]" )
-      else:
-        logging.info( t )
+      sleep(0.1)
       logging.debug( "End of loop" )
   def port_exists(self, port_type, port_num):
     if port_type.lower() == "input":

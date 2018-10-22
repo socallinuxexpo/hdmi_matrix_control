@@ -11,6 +11,18 @@ class TESmartMatrix(MatrixDriver.MatrixDriver):
     super().__init__(serial_port, name=name)
     self.serial_port.write(b'MT00RD0000NT')
     
+  def run(self):
+    logging.debug( "Run loop starting." )
+    while self.running:
+      logging.debug( "Start of loop" )
+      t = self.serial_port.read(48)
+      if len(t) == 48:
+        self.process(t)
+        logging.info( "[" + str(self.getOutput(1)) + "] [" + 
+		      str(self.getOutput(2)) + "] [" + str(self.getOutput(3)) + "] [" + str(self.getOutput(4)) + "]" )
+      else:
+        logging.info( t )
+      logging.debug( "End of loop" )
   def process(self, status):
     self.status = str(status)
   
