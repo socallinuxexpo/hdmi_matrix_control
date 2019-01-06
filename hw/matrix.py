@@ -5,6 +5,7 @@ Contains the root functionality for the matrix driver and related components.
 
 @author mproctor13
 '''
+import copy
 import time
 import threading
 import logging
@@ -30,6 +31,7 @@ class MatrixDriver(threading.Thread):
         assert inputs >= 1, "Expected integral number of inputs"
         assert outputs >= 1, "Expected integral number of outputs"
         self.channels = [1] * outputs  # All inputs start mapped to 1
+        self.pending = []
         self.running = True
 
     def setup(self):
@@ -44,10 +46,10 @@ class MatrixDriver(threading.Thread):
         @param out_chan: output channel
         @param in_chan: input channel
         '''
-        logging.debug("Assigning %d to %s", out_chan, in_chan)
+        logging.debug("Assigning %d to %d", out_chan, in_chan)
         assert out_chan < self.outputs, "Invalid output channel %d" % out_chan
         assert in_chan < self.inputs, "Invalid input channel %d" % in_chan
-        self.channels[out_chan] = in_chan
+        self.pending.append((out_chan, in_chan))
 
     def read(self, out_chan):
         '''
@@ -63,6 +65,9 @@ class MatrixDriver(threading.Thread):
         Run one loop iteration
         '''
         logging.debug("Iterating loop")
+        for output, in_chan in self.pending:
+            self.output[output] = in_chan
+        self.pending = []
 
     def run(self):
         '''
@@ -70,6 +75,5 @@ class MatrixDriver(threading.Thread):
         '''
         self.setup()
         while self.running:
-            print("Looping:")
             self.loop()
             time.sleep(0.1)
