@@ -1,4 +1,4 @@
 pyserial>=2.0
 Flask>=1.0.2
 Flask-RESTful>=0.3.6
-simplejsoni>=3.16.0
+simplejson>=3.16.0

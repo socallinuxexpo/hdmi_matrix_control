@@ -1,3 +1,4 @@
+import time
 import serial
 import simplejson
 import logging
@@ -32,6 +33,7 @@ if __name__ == "__main__":
   else:
     serial_port = serial.Serial('/dev/ttyUSB0')  # open serial port
     logging.debug(serial_port.name)
+    time.sleep(20)
     driver.driver = TESmartMatrix.TESmartMatrix(serial_port) 
   driver.driver.start()
   logging.debug("This is a debug.")
