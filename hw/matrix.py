@@ -70,5 +70,6 @@ class MatrixDriver(threading.Thread):
         '''
         self.setup()
         while self.running:
+            print("Looping:")
             self.loop()
             time.sleep(0.1)

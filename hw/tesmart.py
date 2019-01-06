@@ -40,8 +40,9 @@ class TESmartMatrix(hw.matrix.MatrixDriver):
         data = self.port.read(48)
         if len(data) == 48:
             data = str(data)
-            matches = self.OUT_REG.find_all(data)
-            self.channels = [int(match.group(1)) for match in matches][:self.outputs]
+            matches = self.OUT_REG.finditer(data)
+            self.channels = [int(match.group(1)) - 1 for match in matches][:self.outputs]
+            print("Chans:", self.channels)
         else:
             logging.warning("Unexpected message: %s", data)
         super().loop()
@@ -52,10 +53,10 @@ class TESmartMatrix(hw.matrix.MatrixDriver):
         @param out_chan: output channel
         @param in_chan: input channel
         '''
-        logging.debug("Assigning %d to %s", out_chan, in_chan)
+        print("Assigning %d to %s", out_chan, in_chan)
         assert out_chan < self.outputs, "Invalid output channel %d" % out_chan
         assert in_chan < self.inputs, "Invalid input channel %d" % in_chan
-        self.port.write(b"MT00SW%02d%02dNT" % out_chan, in_chan)
+        self.port.write(b"MT00SW%02d%02dNT" % (in_chan + 1, out_chan + 1))
         time.sleep(0.1)
         self.port.write(b'MT00RD0000NT')
         time.sleep(0.1)
