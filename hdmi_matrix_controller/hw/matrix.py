@@ -1,29 +1,29 @@
-'''
+"""
 MatrixDriver:
 
 Contains the root functionality for the matrix driver and related components.
 
 @author mproctor13
-'''
+"""
 import copy
-import time
-import threading
 import logging
+import threading
+import time
 
 
 class MatrixDriver(threading.Thread):
-    '''
+    """
     Base class of the matrix driver component. Provides a running thread and basic interactivity
     for generic matrix switches.
-    '''
+    """
 
     def __init__(self, inputs=4, outputs=4, name="MatrixDriver"):
-        '''
+        """
         Construct the matirx driver and associated thread.
         @param inputs: number of inputs
         @param outputs: number of outputs
         @param name: name to provide the thread
-        '''
+        """
         threading.Thread.__init__(self, name=name)
         self.inputs = inputs
         self.outputs = outputs
@@ -35,44 +35,44 @@ class MatrixDriver(threading.Thread):
         self.running = True
 
     def setup(self):
-        '''
+        """
         Setup function.
-        '''
+        """
         logging.debug("Setting up Matrix")
 
     def assign(self, out_chan, in_chan):
-        '''
+        """
         Assign a given input channel to a given output channel
         @param out_chan: output channel
         @param in_chan: input channel
-        '''
+        """
         logging.debug("Assigning %d to %d", out_chan, in_chan)
         assert out_chan < self.outputs, "Invalid output channel %d" % out_chan
         assert in_chan < self.inputs, "Invalid input channel %d" % in_chan
         self.pending.append((out_chan, in_chan))
 
     def read(self, out_chan):
-        '''
+        """
         Reads what a current output is set to.
         @param out_chan: output channel to read
-        '''
+        """
         logging.debug("Request to read %d", out_chan)
         assert out_chan < self.outputs, "Invalid output channel %d" % out_chan
         return self.channels[out_chan]
 
     def loop(self):
-        '''
+        """
         Run one loop iteration
-        '''
+        """
         logging.debug("Iterating loop")
         for output, in_chan in self.pending:
-            self.output[output] = in_chan
+            self.outputs[output] = in_chan
         self.pending = []
 
     def run(self):
-        '''
+        """
         Main thread/looping function
-        '''
+        """
         self.setup()
         while self.running:
             self.loop()
