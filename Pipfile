@@ -1,0 +1,31 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+# Abstract dependancies of this package should be maintained in setup.cfg.
+# Concrete dependancies should be defined here.
+# see, https://packaging.python.org/discussions/install-requires-vs-requirements/
+
+[dev-packages]
+bandit = {version = ">=1.5.1", index = "pypi"}
+black = {version = ">=18.9b0", index = "pypi"}
+isort = {version = ">=4.3.4", index = "pypi"}
+pylint = {version = ">=2.2.2", index = "pypi"}
+pytest = {version = ">=4.1.0", index = "pypi"}
+setuptools = {version = ">=40.5.0", index = "pypi"}
+twine = {version = ">=1.12.1", index = "pypi"}
+tox = {version = ">=3.6.1", index = "pypi"}
+wheel = {version = ">=0.32.3", index = "pypi"}
+hdmi_matrix_controller = {editable = true, path = "."}
+
+[requires]
+# Can define a specific verions of Python.
+
+[scripts]
+build = "python setup.py sdist bdist_wheel"
+publish = "twine upload -r testpypi dist/*"
+
+[pipenv]
+allow_prereleases = true
