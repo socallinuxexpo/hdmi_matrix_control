@@ -11,7 +11,7 @@ driver = hdmi_matrix_controller.hw.tesmart.TESmartMatrix("/dev/ttyUSB0")
 time.sleep(6) #6 seconds needed for arduino setup delay 
 driver.start()
 ```
-In this example code, the internal serial ports are first initalized in order to test the matrix. The sleep function is then used in order to delay the set up of the arduino. This allows the arduino to prepare for serial communication. A call to the start function is used to set up the internal read/write (io) thread.
+In this example code, the internal serial ports are first initalized in order to test the matrix. The sleep function is then used to delay the set up of the arduino. This allows the arduino to prepare for serial communication. A call to the start function is uitlized to set up the internal read/write (io) thread.
 
 The driver code has its own internal io thread as it allows the thread to have a singular ownership over the serial port. Any request to get or set the state of the matrix box has to go through the io thread. 
 
