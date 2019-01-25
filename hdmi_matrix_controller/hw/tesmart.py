@@ -46,14 +46,16 @@ class TESmartMatrix(matrix.MatrixDriver):
         """
         # If something has been registered on pending, send out the data
         if self.pending:
-            for output, value in self.pending:
-                if self.channels[output] != value:
-                    self.assign_helper(output, value)
-            self.pending = []
+            output, value = self.pending.pop(0)
+            #if self.channels[output] != value:
+            print(f"Output = {output}, Value = {value}")
+            self.assign_helper(output, value)
             # Now read back once
             self.port.write(b"MT00RD0000NT")
             time.sleep(0.1)
-        self.previous += self.port.read(48).decode("ascii")
+        raw = self.port.read(48)
+        # "self.previous = {raw} ; err1 = {error1} ; err2 = {error2}")
+        self.previous += raw.decode("ascii")
         if len(self.previous) >= 48:
             data = self.previous[:48]
             self.previous = self.previous[48:]
