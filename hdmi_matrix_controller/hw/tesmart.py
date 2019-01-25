@@ -5,7 +5,6 @@ Module containing TESmart matix driver code, for interacting with the TESmart ma
 
 @author mproctor13
 """
-import copy
 import logging
 import re
 import time
@@ -48,7 +47,6 @@ class TESmartMatrix(matrix.MatrixDriver):
         if self.pending:
             output, value = self.pending.pop(0)
             #if self.channels[output] != value:
-            print(f"Output = {output}, Value = {value}")
             self.assign_helper(output, value)
             # Now read back once
             self.port.write(b"MT00RD0000NT")
