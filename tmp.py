@@ -1,6 +1,6 @@
 import time
 import threading
-import hdmi_matrix_controller.hw.tesmart
+import hdmi_matrix_controller.hw.scalemat
 import logging
 
 logger = logging.getLogger(__name__)
@@ -10,7 +10,7 @@ logger.addHandler(logging.StreamHandler())
 sleep_wait = 7
 
 logger.debug("Initializing driver")
-driver = hdmi_matrix_controller.hw.tesmart.TESmartMatrix("/dev/ttyUSB0")
+driver = hdmi_matrix_controller.hw.scalemat.ScaleMatrix("/dev/ttyUSB0")
 
 logger.debug("Waiting %s", sleep_wait)
 time.sleep(sleep_wait)
