@@ -9,6 +9,7 @@ import sys
 from pkg_resources import VersionConflict, require
 from setuptools import setup
 
+
 # Check for minimal version of setuptools
 SETUPTOOLS_VER = "30.5.0"
 try:
@@ -17,5 +18,4 @@ except VersionConflict:
     print("Error: version of setuptools is too old (<%s)!" % SETUPTOOLS_VER)
     sys.exit(1)
 
-if __name__ == "__main__":
-    setup()
+setup(use_scm_version=True)
