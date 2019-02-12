@@ -69,6 +69,15 @@ class MatrixDriver(threading.Thread):
             self.outputs[output] = in_chan
         self.pending = []
 
+    def port_exists(self, port_type, portnum):
+        if port_type == 'Input':
+            return portnum > 0 and portnum - 1 < self.inputs
+        elif port_type == 'Output':
+            return portnum > 0 and portnum  - 1 < self.outputs
+        else:
+            logging.debug("Invalid port type %s", port_type)
+            return False
+
     def run(self):
         """
         Main thread/looping function
