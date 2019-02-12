@@ -32,7 +32,7 @@ def main():
     )
     if args.virtual:
         serial_port = ""
-        driver.driver = hw.MatrixDriver(serial_port)
+        driver.driver = hw.MatrixDriver()
     else:
         serial_port = serial.Serial("/dev/ttyUSB0")  # open serial port
         logging.debug(serial_port.name)
