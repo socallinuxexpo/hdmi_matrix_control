@@ -4,11 +4,13 @@ import random
 import threading
 import time
 
-import serial
+
 from flask import Flask, render_template
 from flask_restful import Api, Resource, abort, reqparse
+import serial
 
 from . import driver
+
 
 app = Flask(__name__)
 api = Api(app)
