@@ -18,7 +18,9 @@ def abort_if_doesnt_exist(port_type, port):
         port_num = int(port)
         if driver.DRIVER.port_exists(port_type, port_num):
             return port_num
+
     abort(404, message="{} port {} doesn't exist".format(port_type, port))
+    return None
 
 
 class OutputPort(Resource):
