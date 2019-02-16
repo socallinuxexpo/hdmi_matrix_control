@@ -4,7 +4,6 @@ import threading
 import time
 
 import serial
-import simplejson
 
 from . import driver, hw
 from .web import flaskTread

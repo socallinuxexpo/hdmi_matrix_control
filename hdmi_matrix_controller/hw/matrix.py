@@ -5,7 +5,6 @@ Contains the root functionality for the matrix driver and related components.
 
 @author mproctor13
 """
-import copy
 import logging
 import threading
 import time

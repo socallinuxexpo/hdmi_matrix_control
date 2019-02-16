@@ -9,9 +9,10 @@ the scale-switch project using the same serial interface as the Matrix.
 @author lestarch
 """
 import re
-import uuid
-import time
 import socket
+import time
+import uuid
+
 from . import tesmart
 
 

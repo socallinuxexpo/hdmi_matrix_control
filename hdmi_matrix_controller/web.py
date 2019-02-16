@@ -1,13 +1,7 @@
-import argparse
 import logging
-import random
-import threading
-import time
-
 
 from flask import Flask, render_template
 from flask_restful import Api, Resource, abort, reqparse
-import serial
 
 from . import driver
 
