@@ -47,7 +47,7 @@ class TESmartMatrix(matrix.MatrixDriver):
         # If something has been registered on pending, send out the data
         if self.pending:
             output, value = self.pending.pop(0)
-            #if self.channels[output] != value:
+            # if self.channels[output] != value:
             self.assign_helper(output, value)
             # Now read back once
             self.port.write(b"MT00RD0000NT")
