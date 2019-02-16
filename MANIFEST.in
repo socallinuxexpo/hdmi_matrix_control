@@ -1,12 +1,15 @@
 # MANIFEST.in is still required because setuptools.setup(package_data=dict()) is a lie.
 # http://blog.codekills.net/2011/07/15/lies,-more-lies-and-python-packaging-documentation-on--package_data-/
 include LICEN[CS]E*
+include USAGE.md
 include Pipfile*
 include pyproject.toml
+include pytest.ini
+include tox.ini
 include .pylintrc
 include .isort.cfg
-include tox.ini
+include .coveragerc
 recursive-include hdmi_matrix_controller *.css *.html *.otf
 exclude requirements.txt
-prune tests
+graft tests
 
