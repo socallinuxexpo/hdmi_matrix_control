@@ -1,3 +1,4 @@
+""" cli interface """
 import argparse
 import logging
 import threading
@@ -10,6 +11,9 @@ from .web import flask_thread
 
 
 def main():
+    """
+    Main cli entrypoint
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-v", "--verbose", action="count", help="increase output verbosity"

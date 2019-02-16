@@ -1,3 +1,6 @@
+""" hdmi_matrix_controller.web """
+# pylint: disable=missing-docstring
+# TODO: Add docstrings to module
 import logging
 
 from flask import Flask, render_template
