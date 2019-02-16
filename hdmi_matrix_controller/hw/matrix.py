@@ -64,13 +64,13 @@ class MatrixDriver(threading.Thread):
 
     def port_exists(self, port_type, portnum):  # pylint: disable=missing-docstring
         # TODO: Add docstring
-        if port_type == "Input":
+        if port_type == "Input":  # pylint: disable=no-else-return
             return portnum > 0 and portnum - 1 < self.inputs
         elif port_type == "Output":
             return portnum > 0 and portnum - 1 < self.outputs
-        else:
-            logging.debug("Invalid port type %s", port_type)
-            return False
+
+        logging.debug("Invalid port type %s", port_type)
+        return False
 
     def run(self):
         """
