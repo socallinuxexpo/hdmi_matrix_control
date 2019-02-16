@@ -26,7 +26,7 @@ class OutputPort(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument("input")
 
-    def get(self, output_port):
+    def get(self, output_port):  # pylint: disable=no-self-use
         oport = abort_if_doesnt_exist("Output", output_port)
         return driver.DRIVER.getOutput(oport)
 
@@ -40,7 +40,7 @@ class OutputPort(Resource):
 
 
 class OutputPortList(Resource):
-    def get(self):
+    def get(self):  # pylint: disable=no-self-use
         return driver.DRIVER.toJSON()
 
 

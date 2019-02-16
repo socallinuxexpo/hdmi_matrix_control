@@ -63,7 +63,7 @@ class ScaleMatrix(tesmart.TESmartMatrix):
         """
         self.messages.append(("Err", error))
 
-    def request(self):
+    def request(self):  # pylint: disable=no-self-use
         """
         Request that messages be filled and prepared to be sent.
         Return a list of (key, msg) pairs to be queued

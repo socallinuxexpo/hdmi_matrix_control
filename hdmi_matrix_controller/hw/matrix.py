@@ -33,12 +33,6 @@ class MatrixDriver(threading.Thread):
         self.pending = []
         self.running = True
 
-    def setup(self):
-        """
-        Setup function.
-        """
-        logging.debug("Setting up Matrix")
-
     def assign(self, out_chan, in_chan):
         """
         Assign a given input channel to a given output channel
@@ -82,7 +76,7 @@ class MatrixDriver(threading.Thread):
         """
         Main thread/looping function
         """
-        self.setup()
+        logging.debug("Setting up Matrix")
         while self.running:
             self.loop()
             time.sleep(0.1)
