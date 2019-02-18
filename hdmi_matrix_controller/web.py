@@ -31,14 +31,14 @@ class OutputPort(Resource):
 
     def get(self, output_port):
         oport = abort_if_doesnt_exist("Output", output_port)
-        return driver.driver.getOutput(oport)
+        return driver.driver.read(oport - 1)
 
     def put(self, output_port):
         args = self.parser.parse_args()
         logging.debug("Get input=[%s] output=[%s]", args, output_port)
         oport = abort_if_doesnt_exist("Output", output_port)
         iport = abort_if_doesnt_exist("Input", args["input"])
-        driver.driver.assign(oport - 1, iport -1)
+        driver.driver.assign(oport - 1, iport - 1)
         return "", 201
 
 

@@ -66,7 +66,7 @@ class MatrixDriver(threading.Thread):
         """
         logging.debug("Iterating loop")
         for output, in_chan in self.pending:
-            self.channels[output] = in_chan
+            self.channels[output] = in_chan + 1
         self.pending = []
 
     def port_exists(self, port_type, portnum):
