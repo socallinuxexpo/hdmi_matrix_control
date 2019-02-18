@@ -40,7 +40,7 @@ class MatrixDriver(threading.Thread):
         """
         logging.debug("Setting up Matrix")
 
-    def setOutput(self, out_chan, in_chan):
+    def assign(self, out_chan, in_chan):
         """
         Save a given output and input channel in the list of pending assignments.
         @param out_chan: output channel

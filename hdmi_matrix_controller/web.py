@@ -38,7 +38,7 @@ class OutputPort(Resource):
         logging.debug("Get input=[%s] output=[%s]", args, output_port)
         oport = abort_if_doesnt_exist("Output", output_port)
         iport = abort_if_doesnt_exist("Input", args["input"])
-        driver.driver.setOutput(oport - 1, iport -1)
+        driver.driver.assign(oport - 1, iport -1)
         return "", 201
 
 
