@@ -19,7 +19,7 @@ api = Api(app)
 def abort_if_doesnt_exist(port_type, port):
     if port.isdigit():
         port_num = int(port)
-        if driver.driver.port_exists(port_type, port_num):
+        if driver.driver.port_exists(port_type, port_num - 1):
             return port_num
     abort(404, message="{} port {} doesn't exist".format(port_type, port))
 
@@ -38,7 +38,7 @@ class OutputPort(Resource):
         logging.debug("Get input=[%s] output=[%s]", args, output_port)
         oport = abort_if_doesnt_exist("Output", output_port)
         iport = abort_if_doesnt_exist("Input", args["input"])
-        driver.driver.setOutput(oport, iport)
+        driver.driver.setOutput(oport - 1, iport -1)
         return "", 201
 
 
