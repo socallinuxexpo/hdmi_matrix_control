@@ -40,9 +40,9 @@ class MatrixDriver(threading.Thread):
         """
         logging.debug("Setting up Matrix")
 
-    def assign(self, out_chan, in_chan):
+    def setOutput(self, out_chan, in_chan):
         """
-        Assign a given input channel to a given output channel
+        Save a given output and input channel in the list of pending assignments.
         @param out_chan: output channel
         @param in_chan: input channel
         """
@@ -66,14 +66,14 @@ class MatrixDriver(threading.Thread):
         """
         logging.debug("Iterating loop")
         for output, in_chan in self.pending:
-            self.outputs[output] = in_chan
+            self.channels[output] = in_chan
         self.pending = []
 
     def port_exists(self, port_type, portnum):
         if port_type == 'Input':
-            return portnum > 0 and portnum - 1 < self.inputs
+            return portnum >= 0 and portnum < self.inputs
         elif port_type == 'Output':
-            return portnum > 0 and portnum  - 1 < self.outputs
+            return portnum >= 0 and portnum  < self.outputs
         else:
             logging.debug("Invalid port type %s", port_type)
             return False
