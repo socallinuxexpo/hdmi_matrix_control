@@ -30,7 +30,7 @@ class MatrixDriver(threading.Thread):
         # inputs and output checks
         assert inputs >= 1, "Expected integral number of inputs"
         assert outputs >= 1, "Expected integral number of outputs"
-        self.channels = [1] * outputs  # All inputs start mapped to 1
+        self.channels = [0] * outputs  # All inputs start mapped to 1
         self.pending = []
         self.running = True
 
@@ -66,7 +66,7 @@ class MatrixDriver(threading.Thread):
         """
         logging.debug("Iterating loop")
         for output, in_chan in self.pending:
-            self.channels[output] = in_chan + 1
+            self.channels[output] = in_chan
         self.pending = []
 
     def port_exists(self, port_type, portnum):
