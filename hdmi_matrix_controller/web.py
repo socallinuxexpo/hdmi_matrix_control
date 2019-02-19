@@ -1,19 +1,16 @@
-import argparse
+""" hdmi_matrix_controller.web """
+# pylint: disable=missing-docstring
+# TODO: Add docstrings to module
 import logging
-import random
-import threading
-import time
-
 
 from flask import Flask, render_template
 from flask_restful import Api, Resource, abort, reqparse
-import serial
 
 from . import driver
 
 
-app = Flask(__name__)
-api = Api(app)
+APP = Flask(__name__)
+API = Api(APP)
 
 
 def abort_if_doesnt_exist(port_type, port):
@@ -21,7 +18,9 @@ def abort_if_doesnt_exist(port_type, port):
         port_num = int(port)
         if driver.driver.port_exists(port_type, port_num - 1):
             return port_num
+
     abort(404, message="{} port {} doesn't exist".format(port_type, port))
+    return None
 
 
 class OutputPort(Resource):
@@ -29,10 +28,10 @@ class OutputPort(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument("input")
 
-    def get(self, output_port):
+    def get(self, output_port):  # pylint: disable=no-self-use
         oport = abort_if_doesnt_exist("Output", output_port)
         return driver.driver.read(oport - 1) + 1
-
+ 
     def put(self, output_port):
         args = self.parser.parse_args()
         logging.debug("Get input=[%s] output=[%s]", args, output_port)
@@ -43,18 +42,18 @@ class OutputPort(Resource):
 
 
 class OutputPortList(Resource):
-    def get(self):
-        return driver.driver.toJSON()
+    def get(self):  # pylint: disable=no-self-use
+        return driver.DRIVER.toJSON()
 
 
-api.add_resource(OutputPortList, "/outputs")
-api.add_resource(OutputPort, "/output/<output_port>")
+API.add_resource(OutputPortList, "/outputs")
+API.add_resource(OutputPort, "/output/<output_port>")
 
 
-@app.route("/")
+@APP.route("/")
 def index():
-    return render_template("index.html", matrix=driver.driver)
+    return render_template("index.html", matrix=driver.DRIVER)
 
 
-def flaskTread():
-    app.run(use_reloader=False)
+def flask_thread():
+    APP.run(use_reloader=False)

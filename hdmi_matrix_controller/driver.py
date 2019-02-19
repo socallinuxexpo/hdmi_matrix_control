@@ -1,1 +1,2 @@
-driver = None
+""" Driver constant"""
+DRIVER = None

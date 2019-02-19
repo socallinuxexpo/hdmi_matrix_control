@@ -5,7 +5,6 @@ Contains the root functionality for the matrix driver and related components.
 
 @author mproctor13
 """
-import copy
 import logging
 import threading
 import time
@@ -33,12 +32,6 @@ class MatrixDriver(threading.Thread):
         self.channels = [0] * outputs  # All inputs start mapped to 1
         self.pending = []
         self.running = True
-
-    def setup(self):
-        """
-        Setup function.
-        """
-        logging.debug("Setting up Matrix")
 
     def assign(self, out_chan, in_chan):
         """
@@ -69,20 +62,23 @@ class MatrixDriver(threading.Thread):
             self.channels[output] = in_chan
         self.pending = []
 
-    def port_exists(self, port_type, portnum):
-        if port_type == 'Input':
+    def port_exists(self, port_type, portnum):  # pylint: disable=missing-docstring
+        """
+        Checks if the specified port exists.
+        """
+        if port_type == "Input":  # pylint: disable=no-else-return
             return portnum >= 0 and portnum < self.inputs
-        elif port_type == 'Output':
-            return portnum >= 0 and portnum  < self.outputs
-        else:
-            logging.debug("Invalid port type %s", port_type)
-            return False
+        elif port_type == "Output":
+            return portnum >= 0 and portnum < self.outputs
+
+        logging.debug("Invalid port type %s", port_type)
+        return False
 
     def run(self):
         """
         Main thread/looping function
         """
-        self.setup()
+        logging.debug("Setting up Matrix")
         while self.running:
             self.loop()
             time.sleep(0.1)

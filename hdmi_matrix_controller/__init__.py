@@ -10,3 +10,5 @@ except pkg_resources.DistributionNotFound:
     __version__ = None
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
+
+__all__ = ["hw"]
