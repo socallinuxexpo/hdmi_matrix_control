@@ -7,17 +7,17 @@ matrix:
     - python: 3.5
       env: TOXENV=lint
     - python: 3.5
-      env: TOXENV=security
+      env: TOXENV=sec
     - python: 3.5
       env: TOXENV=pkg
-#     - python: 3.5
-#       env: TOXENV=py35
-#     - python: 3.6
-#       env: TOXENV=py36
-#     - python: 3.7
-#       env: TOXENV=py37
-#     - python: 3.8-dev
-#       env: TOXENV=py38-dev
+    - python: 3.5
+      env: TOXENV=py35
+    - python: 3.6
+      env: TOXENV=py36
+    - python: 3.7
+      env: TOXENV=py37
+    - python: 3.8-dev
+      env: TOXENV=py38-dev
 #     - python: pypy3.5
 #       env: TOXENV=pypy35
 install: pip install 'tox == 3.7.0'

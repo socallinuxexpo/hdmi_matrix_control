@@ -1,16 +1,19 @@
+""" cli interface """
 import argparse
 import logging
 import threading
 import time
 
 import serial
-import simplejson
 
 from . import driver, hw
-from .web import flaskTread
+from .web import flask_thread
 
 
 def main():
+    """
+    Main cli entrypoint
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-v", "--verbose", action="count", help="increase output verbosity"
@@ -32,23 +35,23 @@ def main():
     )
     if args.virtual:
         serial_port = ""
-        driver.driver = hw.MatrixDriver()
+        driver.DRIVER = hw.MatrixDriver()
     else:
         serial_port = serial.Serial("/dev/ttyUSB0")  # open serial port
         logging.debug(serial_port.name)
         time.sleep(20)
-        driver.driver = hw.TESmartMatrix(serial_port)
-    driver.driver.start()
+        driver.DRIVER = hw.TESmartMatrix(serial_port)
+    driver.DRIVER.start()
     logging.debug("This is a debug.")
     logging.info("This is a info.")
     logging.warning("This is a warning.")
     logging.error("This is an error.")
     logging.critical("This is a critical.")
 
-    t1 = threading.Thread(target=flaskTread, name="webThread")
-    t1.start()
-    t1.join()
-    driver.driver.join()
+    thread1 = threading.Thread(target=flask_thread, name="webThread")
+    thread1.start()
+    thread1.join()
+    driver.DRIVER.join()
 
     serial_port.close()
 

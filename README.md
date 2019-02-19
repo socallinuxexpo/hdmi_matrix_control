@@ -1,4 +1,4 @@
-# Proof of concept of Matrix controller daemon
+# Matrix controller daemon
 
 ## Install dependencies
 ```bash
