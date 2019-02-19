@@ -29,13 +29,13 @@ class MatrixDriver(threading.Thread):
         # inputs and output checks
         assert inputs >= 1, "Expected integral number of inputs"
         assert outputs >= 1, "Expected integral number of outputs"
-        self.channels = [1] * outputs  # All inputs start mapped to 1
+        self.channels = [0] * outputs  # All inputs start mapped to 1
         self.pending = []
         self.running = True
 
     def assign(self, out_chan, in_chan):
         """
-        Assign a given input channel to a given output channel
+        Save a given output and input channel in the list of pending assignments.
         @param out_chan: output channel
         @param in_chan: input channel
         """
@@ -59,15 +59,17 @@ class MatrixDriver(threading.Thread):
         """
         logging.debug("Iterating loop")
         for output, in_chan in self.pending:
-            self.outputs[output] = in_chan
+            self.channels[output] = in_chan
         self.pending = []
 
     def port_exists(self, port_type, portnum):  # pylint: disable=missing-docstring
-        # TODO: Add docstring
+        """
+        Checks if the specified port exists.
+        """
         if port_type == "Input":  # pylint: disable=no-else-return
-            return portnum > 0 and portnum - 1 < self.inputs
+            return portnum >= 0 and portnum < self.inputs
         elif port_type == "Output":
-            return portnum > 0 and portnum - 1 < self.outputs
+            return portnum >= 0 and portnum < self.outputs
 
         logging.debug("Invalid port type %s", port_type)
         return False
