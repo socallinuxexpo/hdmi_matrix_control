@@ -16,7 +16,7 @@ API = Api(APP)
 def abort_if_doesnt_exist(port_type, port):
     if port.isdigit():
         port_num = int(port)
-        if driver.driver.port_exists(port_type, port_num - 1):
+        if driver.DRIVER.port_exists(port_type, port_num - 1):
             return port_num
 
     abort(404, message="{} port {} doesn't exist".format(port_type, port))
@@ -30,14 +30,14 @@ class OutputPort(Resource):
 
     def get(self, output_port):  # pylint: disable=no-self-use
         oport = abort_if_doesnt_exist("Output", output_port)
-        return driver.driver.read(oport - 1) + 1
+        return driver.DRIVER.read(oport - 1) + 1
  
     def put(self, output_port):
         args = self.parser.parse_args()
         logging.debug("Get input=[%s] output=[%s]", args, output_port)
         oport = abort_if_doesnt_exist("Output", output_port)
         iport = abort_if_doesnt_exist("Input", args["input"])
-        driver.driver.assign(oport - 1, iport - 1)
+        driver.DRIVER.assign(oport - 1, iport - 1)
         return "", 201
 
 
