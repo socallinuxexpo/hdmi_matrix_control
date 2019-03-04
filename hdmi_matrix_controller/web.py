@@ -83,7 +83,8 @@ class OutputPortList(Resource):
         """
         Returns the JSON representation of the driver.
         """
-        return driver.DRIVER.toJSON() # TODO
+        logging.info(driver.DRIVER.to_json())
+        return driver.DRIVER.to_json()
 
 
 API.add_resource(OutputPortList, "/outputs")
