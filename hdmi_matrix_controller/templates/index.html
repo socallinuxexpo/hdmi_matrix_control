@@ -18,10 +18,10 @@
 </head>
 <body>
 
-{% for output in range(1, matrix.num_outputs+1) %}
+{% for output in range(1, matrix.outputs+1) %}
 <select class="target" id="output_{{output}}">
-{% for input in range(1, matrix.num_inputs+1) %}
-   <option value="{{input}}"{% if matrix.getOutput(output)==input %} selected="selected"{% endif %}>{{input}}</option>
+{% for input in range(1, matrix.inputs+1) %}
+   <option value="{{input}}"{% if matrix.read(output-1)==input-1 %} selected="selected"{% endif %}>{{input}}</option>
 {% endfor %}
 </select>
 {% endfor %}
