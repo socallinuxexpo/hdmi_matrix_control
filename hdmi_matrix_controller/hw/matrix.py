@@ -74,6 +74,15 @@ class MatrixDriver(threading.Thread):
         logging.debug("Invalid port type %s", port_type)
         return False
 
+    def to_json(self):
+        """
+        Returns a dictionary representation of the driver.
+        """
+        return {'name': self.name, \
+                'inputs': self.inputs, \
+                'outputs': self.outputs, \
+                'channels': self.channels}
+
     def run(self):
         """
         Main thread/looping function
