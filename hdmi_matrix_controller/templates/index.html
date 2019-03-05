@@ -5,15 +5,42 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script type="text/javascript">
 
-  $(document).ready(function(){
-    $( ".target" ).change(function() {
-      alert( $(this).attr('id') + "==" + $(this).val() );
-    });
-    url="outputs"
+  let getMatrixJson  = function() {
+    let url="outputs"
     $.getJSON(url, function(response) {
+      console.log(response);
       alert(response['outputs']);
     });
+  }
+
+  // When the document loads, set up handlers
+  // and get the JSON representation of the matrix from the API.
+  $(document).ready(function(){
+    // Handler for the channel fields.
+    $( ".target" ).change(
+      // Send a PUT request to the API.
+      function() {
+        let field = $(this).attr('id');
+        let input = $(this).val();
+        let output = field.split('_')[1];
+        console.log("input=" + input);
+        console.log("output=" + output);
+        $.ajax({
+          url: "output/" + output,
+          method: 'PUT',
+          data: 'input=' + input
+        }) 
+        .done( 
+          function(response) {
+            alert( field + "==" + input );
+          }
+        ); 
+      }   
+    );
+
+    getMatrixJson();
   });
+
   </script>
 </head>
 <body>
