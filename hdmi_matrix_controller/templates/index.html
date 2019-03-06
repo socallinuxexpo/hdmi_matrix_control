@@ -5,26 +5,47 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script type="text/javascript">
 
-  let getMatrixJson  = function() {
-    let url="outputs"
-    $.getJSON(url, function(response) {
-      console.log(response);
-      alert(response['outputs']);
-    });
+  // Create the drop-down lists for assigning channels.
+  // The argument is the JSON from the API.
+  let createChannelControls = function(matrixObj) {
+    for (let out = 0; out < matrixObj.outputs; out++) {
+      // Create a drop-down for this output channel.
+      let newSelect = document.createElement('select');
+      newSelect.setAttribute('class', 'target');
+      newSelect.setAttribute('id', 'output_' + (out + 1).toString());
+        
+      // Create an option for each input channel.
+      for (let inp = 0; inp < matrixObj.inputs; inp++) {
+        let option = document.createElement('option');
+        option.setAttribute('value', inp + 1);
+        // Auto-select the option if it is the assigned input channel.
+        if (matrixObj.channels[out] == inp) {
+          option.setAttribute('selected', 'selected');
+        }
+        option.innerText = (inp + 1).toString();
+        // Add the option to the drop-down.
+        newSelect.append(option);
+
+      }
+      // Add the drop-down list to the div.
+      $('#channel_controls').append(newSelect);
+      createChannelHandler();
+    }
+    
   }
 
-  // When the document loads, set up handlers
-  // and get the JSON representation of the matrix from the API.
-  $(document).ready(function(){
-    // Handler for the channel fields.
+  // Create handlers for the drop-down lists created by createChannelControls.
+  let createChannelHandler = function() {
+    // This handler is called when a new input channel is selected.
     $( ".target" ).change(
-      // Send a PUT request to the API.
       function() {
         let field = $(this).attr('id');
         let input = $(this).val();
         let output = field.split('_')[1];
-        console.log("input=" + input);
-        console.log("output=" + output);
+        console.log("input=", input);
+        console.log("output=",output);
+
+        // Send PUT request.
         $.ajax({
           url: "output/" + output,
           method: 'PUT',
@@ -32,25 +53,44 @@
         }) 
         .done( 
           function(response) {
-            alert( field + "==" + input );
+            console.log( field, "==", input );
           }
-        ); 
-      }   
-    );
+        )
+        .fail(
+          function(data, textStatus, xhr) {
+            alert('PUT request failed')
+            console.log("error", data.status, xhr);
+          }
 
-    getMatrixJson();
+        )
+        ; 
+      }
+    );
+  }
+
+  // When the document loads, create the channel controls
+  // from the current state of the matrix driver.
+  $(document).ready(function(){
+
+    // Get the current state of the matrix
+    let url = '/outputs';
+    $.getJSON(url, function(response) {
+      console.log(response);
+      createChannelControls(response);
+    })
+    .fail(
+      function(data, textStatus, xhr) {
+        alert("getJSON failed");
+        console.log('error', data.status, xhr);
+      }
+    );
   });
 
   </script>
 </head>
 <body>
 
-{% for output in range(1, matrix.outputs+1) %}
-<select class="target" id="output_{{output}}">
-{% for input in range(1, matrix.inputs+1) %}
-   <option value="{{input}}"{% if matrix.read(output-1)==input-1 %} selected="selected"{% endif %}>{{input}}</option>
-{% endfor %}
-</select>
-{% endfor %}
+<div id="channel_controls">
+</div>
 </body>
 </html>
