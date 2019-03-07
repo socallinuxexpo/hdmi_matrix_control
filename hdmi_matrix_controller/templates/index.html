@@ -42,9 +42,8 @@
         let field = $(this).attr('id');
         let input = $(this).val();
         let output = field.split('_')[1];
-        console.log("input=", input);
-        console.log("output=",output);
-
+        console.log("Setting output", output, "to input", input);
+        
         // Send PUT request.
         $.ajax({
           url: "output/" + output,
