@@ -62,7 +62,7 @@ class MatrixDriver(threading.Thread):
             self.channels[output] = in_chan
         self.pending = []
 
-    def port_exists(self, port_type, portnum):  # pylint: disable=missing-docstring
+    def port_exists(self, port_type, portnum):
         """
         Checks if the specified port exists.
         """
