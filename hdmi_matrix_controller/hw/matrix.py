@@ -62,7 +62,7 @@ class MatrixDriver(threading.Thread):
             self.channels[output] = in_chan
         self.pending = []
 
-    def port_exists(self, port_type, portnum):  # pylint: disable=missing-docstring
+    def port_exists(self, port_type, portnum):
         """
         Checks if the specified port exists.
         """
@@ -73,6 +73,15 @@ class MatrixDriver(threading.Thread):
 
         logging.debug("Invalid port type %s", port_type)
         return False
+
+    def to_json(self):
+        """
+        Returns a dictionary representation of the driver.
+        """
+        return {'name': self.name, \
+                'inputs': self.inputs, \
+                'outputs': self.outputs, \
+                'channels': self.channels}
 
     def run(self):
         """

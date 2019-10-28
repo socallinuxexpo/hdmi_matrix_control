@@ -3,6 +3,7 @@ import argparse
 import logging
 import threading
 import time
+import sys
 
 import serial
 
@@ -37,10 +38,15 @@ def main():
         serial_port = ""
         driver.DRIVER = hw.MatrixDriver()
     else:
-        serial_port = serial.Serial("/dev/ttyUSB0")  # open serial port
-        logging.debug(serial_port.name)
-        time.sleep(20)
-        driver.DRIVER = hw.TESmartMatrix(serial_port)
+        serial_port = "/dev/ttyUSB0"
+        logging.debug(serial_port)
+        try:
+            driver.DRIVER = hw.TESmartMatrix(serial_port)
+            time.sleep(20)
+        except serial.SerialException as exc:
+            logging.error(str(exc))
+            sys.exit()
+
     driver.DRIVER.start()
     logging.debug("This is a debug.")
     logging.info("This is a info.")
@@ -53,7 +59,7 @@ def main():
     thread1.join()
     driver.DRIVER.join()
 
-    serial_port.close()
+    #serial_port.close()
 
 
 if __name__ == "__main__":
