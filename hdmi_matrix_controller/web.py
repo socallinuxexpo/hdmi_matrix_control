@@ -5,7 +5,8 @@ This is the REST API that allows control of the HDMI matrix
 over the Internet.
 
 The following endpoints and HTTP verbs are allowed:
-GET /outputs: Returns JSON of driver settings.
+GET /inputs: Returns list of inputs, as JSON.
+GET /outputs: Returns output map to inputs
 GET /output/<portnum>: Returns the input port associated with an output port.
 PUT /output/<portnum>: Sets the input port associated with an output port.
                        The data format is "input=<portnum>".
