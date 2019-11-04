@@ -14,7 +14,7 @@ PUT /output/<portnum>: Sets the input port associated with an output port.
 Port numbers must be between 1 and n, where n is the driver's maximum number
 of input or output ports.
 """
-
+import os
 
 
 import logging
@@ -24,8 +24,8 @@ from flask_restful import Api, Resource, abort, reqparse
 
 from . import driver
 
-
-APP = Flask(__name__)
+STATIC_FILES = os.path.join(os.path.dirname(__file__),  "..", "..", "html-new")
+APP = Flask(__name__, static_folder=STATIC_FILES)
 API = Api(APP)
 
 
@@ -88,8 +88,27 @@ class OutputPortList(Resource):
         return driver.DRIVER.to_json()
 
 
-API.add_resource(OutputPortList, "/outputs")
-API.add_resource(OutputPort, "/output/<output_port>")
+
+class InputPort(Resource):
+    """
+    Resource hat handles the URL for a assigning and reading
+    a single output port.
+    """
+
+    def get(self):  # pylint: disable=no-self-use
+        """
+        Returns the input port associated with an output port.
+        """
+        return [1, 2, 3, 4]
+
+
+API.add_resource(InputPort, "/matrix/inputs")
+API.add_resource(OutputPortList, "/matrix/outputs")
+API.add_resource(OutputPort, "/matrix/output/<output_port>")
+
+@APP.route('/<path:path>')
+def send_static_files(path):
+    return APP.send_static_file(path)
 
 
 @APP.route("/")
@@ -97,7 +116,7 @@ def index():
     """
     Renders demo web page.
     """
-    return render_template("index.html", matrix=driver.DRIVER)
+    return APP.send_static_file("yeet.html")
 
 
 def flask_thread():
