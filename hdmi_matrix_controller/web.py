@@ -14,36 +14,48 @@ PUT /output/<portnum>: Sets the input port associated with an output port.
 Port numbers must be between 1 and n, where n is the driver's maximum number
 of input or output ports.
 """
-import os
-
-
 import logging
 
-from flask import Flask, render_template
-from flask_restful import Api, Resource, abort, reqparse
+import flask
+import flask_restful
+import  flask_restful.reqparse
 
-from . import driver
+from . import config
+from . import messaging
 
-STATIC_FILES = os.path.join(os.path.dirname(__file__),  "..", "..", "html-new")
-APP = Flask(__name__, static_folder=STATIC_FILES)
-API = Api(APP)
+# Create the flask app, and load configuration from the object
+app = flask.Flask(__name__)
+app.config.from_object('hdmi_matrix_controller.config')
+app.static_folder = app.config["STATIC_FILES_PATH"]
+
+# Configure restful API
+api = flask_restful.Api(app)
+messaging.setup_request()
+geometry = {key: value for key, value in messaging.send_recv({"command": "read"}).items()}
 
 
-def abort_if_doesnt_exist(port_type, port):
+def get_valid_port(port, ptype):
     """
-    Checks if an input or output port is a valid port of the driver.
-    Returns a 404 response if it does not exist.
+    Gets a valid port number for the matix. If the supplied port is not a number, or that number is out of range, then
+    this will abort with a 404 error. Otherwise a valid port number is returned.
     """
-    if port.isdigit():
-        port_num = int(port)
-        if driver.DRIVER.port_exists(port_type, port_num - 1):
-            return port_num
-
-    abort(404, message="{} port {} doesn't exist".format(port_type, port))
+    message = "No error, at least I didn't think so"
+    try:
+        port = int(port , 0)
+        prange = geometry[ptype+"s"]
+        assert 0 <= port < prange, "{} port {} not in [0, {})".format(ptype, port, prange)
+        return port
+    except (ValueError, TypeError) as vte:
+        message = "{} is not a valid integer".format(port)
+    except KeyError as ker:
+        message = "{} is not a valid port type".format(ker)
+    except AssertionError as ase:
+        message = str(ase)
+    flask_restful.abort(404, message=message)
     return None
 
 
-class OutputPort(Resource):
+class OutputPort(flask_restful.Resource):
     """
     Resource hat handles the URL for a assigning and reading
     a single output port.
@@ -52,15 +64,15 @@ class OutputPort(Resource):
         """
         Constructor creates a request parser to check PUT data.
         """
-        self.parser = reqparse.RequestParser()
+        self.parser = flask_restful.reqparse.RequestParser()
         self.parser.add_argument("input")
 
     def get(self, output_port):  # pylint: disable=no-self-use
         """
         Returns the input port associated with an output port.
         """
-        oport = abort_if_doesnt_exist("Output", output_port)
-        return driver.DRIVER.read(oport - 1) + 1
+        output_port = get_valid_port(output_port, "output")
+        return messaging.send_recv({"command": "read"})["channels"][output_port], 200
 
     def put(self, output_port):
         """
@@ -69,13 +81,12 @@ class OutputPort(Resource):
         """
         args = self.parser.parse_args()
         logging.debug("Get input=[%s] output=[%s]", args, output_port)
-        oport = abort_if_doesnt_exist("Output", output_port)
-        iport = abort_if_doesnt_exist("Input", args["input"])
-        driver.DRIVER.assign(oport - 1, iport - 1)
-        return "", 201
+        output_port = get_valid_port(output_port, "output")
+        input_port = get_valid_port(args["input"], "input")
+        return messaging.send_recv({"command": "assign", "output":output_port, "input": input_port})
 
 
-class OutputPortList(Resource):
+class OutputPortList(flask_restful.Resource):
     """
     Resource that handles the URL for reading all
     ports of the driver.
@@ -84,12 +95,11 @@ class OutputPortList(Resource):
         """
         Returns the JSON representation of the driver.
         """
-        logging.info(driver.DRIVER.to_json())
-        return driver.DRIVER.to_json()
+        return geometry["outputs"]
 
 
 
-class InputPort(Resource):
+class InputPort(flask_restful.Resource):
     """
     Resource hat handles the URL for a assigning and reading
     a single output port.
@@ -99,28 +109,29 @@ class InputPort(Resource):
         """
         Returns the input port associated with an output port.
         """
-        return [1, 2, 3, 4]
+        return geometry["inputs"]
 
 
-API.add_resource(InputPort, "/matrix/inputs")
-API.add_resource(OutputPortList, "/matrix/outputs")
-API.add_resource(OutputPort, "/matrix/output/<output_port>")
+api.add_resource(InputPort, "/matrix/inputs")
+api.add_resource(OutputPortList, "/matrix/outputs")
+api.add_resource(OutputPort, "/matrix/output/<output_port>")
 
-@APP.route('/<path:path>')
+@app.route('/<path:path>')
 def send_static_files(path):
-    return APP.send_static_file(path)
+    return app.send_static_file(path)
 
 
-@APP.route("/")
+@app.route("/")
 def index():
     """
     Renders demo web page.
     """
-    return APP.send_static_file("yeet.html")
+    return app.send_static_file("yeet.html")
 
 
 def flask_thread():
     """
     Starts the Flask app.
     """
-    APP.run(use_reloader=False)
+    app.run(use_reloader=False)
+

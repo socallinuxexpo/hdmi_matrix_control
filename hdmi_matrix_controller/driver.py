@@ -2,7 +2,7 @@
 import serial
 from . import hw
 try:
-    serial_port = serial.Serial("/dev/ttyUSB0")  # open serial port
-    DRIVER = hw.TESmartMatrix(serial_port)
-except:
+    DRIVER = hw.TESmartMatrix("/dev/ttyUSB0")
+except Exception as exc:
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!! Exception: ", exc)
     DRIVER = hw.MatrixDriver()

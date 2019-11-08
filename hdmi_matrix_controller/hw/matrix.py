@@ -1,7 +1,9 @@
 """
 MatrixDriver:
 
-Contains the root functionality for the matrix driver and related components.
+Contains the root functionality for the matrix driver and related components. This should act as the global
+functionality that oversees all Matrix activity. This will allow us to run test Matrix drivers and real matrix drivers
+using the same code base.
 
 @author mproctor13
 """
@@ -13,7 +15,8 @@ import time
 class MatrixDriver(threading.Thread):
     """
     Base class of the matrix driver component. Provides a running thread and basic interactivity
-    for generic matrix switches.
+    for generic matrix switches. This includes tracking input and output count. It also allows for
+    the matrix switch to be serialized to the JSON data exchange format.
     """
 
     def __init__(self, inputs=4, outputs=4, name="MatrixDriver"):
@@ -62,32 +65,20 @@ class MatrixDriver(threading.Thread):
             self.channels[output] = in_chan
         self.pending = []
 
-    def port_exists(self, port_type, portnum):
-        """
-        Checks if the specified port exists.
-        """
-        if port_type == "Input":  # pylint: disable=no-else-return
-            return portnum >= 0 and portnum < self.inputs
-        elif port_type == "Output":
-            return portnum >= 0 and portnum < self.outputs
-
-        logging.debug("Invalid port type %s", port_type)
-        return False
-
     def to_json(self):
         """
         Returns a dictionary representation of the driver.
         """
-        return {'name': self.name, \
-                'inputs': self.inputs, \
-                'outputs': self.outputs, \
+        return {'name': self.name,
+                'inputs': self.inputs,
+                'outputs': self.outputs,
                 'channels': self.channels}
 
     def run(self):
         """
         Main thread/looping function
         """
-        logging.debug("Setting up Matrix")
+        logging.debug("Setting up {} Matrix".format(self.__class__.__name__))
         while self.running:
             self.loop()
             time.sleep(0.1)
