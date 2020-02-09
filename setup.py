@@ -18,4 +18,4 @@ except VersionConflict:
     print("Error: version of setuptools is too old (<%s)!" % SETUPTOOLS_VER)
     sys.exit(1)
 
-setup(use_scm_version=True)
+setup(use_scm_version=False)
