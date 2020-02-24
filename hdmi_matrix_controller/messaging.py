@@ -11,6 +11,10 @@ a messaging layer.  It supports the following JSON based functions:
 """
 import zmq
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+LOGGER = logging.getLogger("zmq-msq")
+
 CONNECTION_STRING = "ipc:///tmp/matrix"
 
 context = zmq.Context()
@@ -31,11 +35,13 @@ def _setup(type):
     assert active is None, "Already setup, cannot setup again"
     assert type == zmq.REQ or type == zmq.REP, "Invalid type to setup"
     active = context.socket(type)
+    LOGGER.debug("Attempting ZMQ %s socket", ("REQ" if type == zmq.REQ else "REP"))
     # Connect or bind depending on type
     if type == zmq.REQ:
         active.connect(CONNECTION_STRING)
     else:
         active.bind(CONNECTION_STRING)
+    LOGGER.info("Created ZMQ %s socket", ("REQ" if type == zmq.REQ else "REP"))
 
 
 def setup_request():
@@ -59,7 +65,9 @@ def send(object):
     Sends an object in JSON format.
     """
     assert active is not None, "Messaging is not setup."
+    LOGGER.info("Sending ZMQ message: %s", object)
     active.send_json(object)
+    LOGGER.debug("Sent ZMQ message successfully")
 
 
 def recv():
@@ -68,7 +76,10 @@ def recv():
     :return:  python onject.
     """
     assert active is not None, "Messaging is not setup."
-    return active.recv_json()
+    LOGGER.debug("Attempting to receive ZMQ message")
+    message = active.recv_json()
+    LOGGER.info("Received ZMQ message: %s", message)
+    return message
 
 
 def send_recv(command, retries=3):
@@ -85,10 +96,12 @@ def send_recv(command, retries=3):
             send(command)
             return recv()
         except MessagingException as mxc:
+            LOGGER.warning("Failed to send message and recv response. Retrying. Error: %S", mxc)
             setup_request()
             last_exc = mxc
     # Raise the last exception encountered
     else:
+        LOGGER.critical("Failed to send message and recv response. Error: %S", last_exc)
         raise last_exc from None
 
 
@@ -99,5 +112,7 @@ def close():
     """
     global active
     assert active is not None, "Messaging not setup"
+    LOGGER.info("Closing ZMQ socket")
     active.close()
+    LOGGER.debug("Closed ZMQ socket successfully")
     active = None
