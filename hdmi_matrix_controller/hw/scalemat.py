@@ -49,7 +49,7 @@ class ScaleMatrix(tesmart.TESmartMatrix):
             if self.messages:
                 key, msg = self.messages.pop(0)
                 # Port defined in parent
-                formatter = "<{{:{}.{}}}:{{:{}.{}}}>".format(
+                formatter = "<{{:{}.{}}}{{:{}.{}}}>".format(
                     self.KEY_WIDTH, self.KEY_WIDTH, self.MSG_WIDTH, self.MSG_WIDTH
                 )
                 self.port.write(formatter.format(key, msg).encode("ascii"))
@@ -77,7 +77,7 @@ class ScaleMatrix(tesmart.TESmartMatrix):
             ipadd = socket.gethostbyname(socket.getfqdn())
         return [
             ("Host", socket.gethostname()),
-            ("MAC", mac),
+            ("MAC", mac.upper()),
             ("IP", ipadd),
             (" !! ", "STARCH!!!!!!!!!"),
         ]
