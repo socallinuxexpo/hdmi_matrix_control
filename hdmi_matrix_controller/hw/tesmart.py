@@ -21,7 +21,7 @@ class TESmartMatrix(matrix.MatrixDriver):
     """
     TESmartMatrix driver used to drive the TESmart matrix.
     """
-
+    MESSAGE_INTERVAL=1
     OUT_REG = re.compile(r"O\dI(\d)")
 
     def __init__(self, port, name="TESmartMatrix"):
@@ -33,6 +33,7 @@ class TESmartMatrix(matrix.MatrixDriver):
         super().__init__(inputs=4, outputs=4, name=name)
         self.port = serial.Serial(port, timeout=11 * 48 / (8 * 9600))
         self.previous = ""
+        self.last = time.time()
 
     def setup(self):
         """
@@ -50,6 +51,10 @@ class TESmartMatrix(matrix.MatrixDriver):
             # if self.channels[output] != value:
             self.assign_helper(output, value)
             # Now read back once
+            self.port.write(b"MT00RD0000NT")
+            time.sleep(0.1)
+        if (time.time() - self.last) > self.MESSAGE_INTERVAL:
+            self.last = time.time()
             self.port.write(b"MT00RD0000NT")
             time.sleep(0.1)
         raw = self.port.read(48)

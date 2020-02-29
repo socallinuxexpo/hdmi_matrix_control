@@ -23,7 +23,7 @@ class ScaleMatrix(tesmart.TESmartMatrix):
     Allowing for communication to a device installed as a pass-through on the serial chain.
     """
 
-    MESSAGE_INTERVAL = 10
+    MESSAGE_INTERVAL = 4
     KEY_WIDTH = 4
     MSG_WIDTH = 20
 
@@ -37,14 +37,15 @@ class ScaleMatrix(tesmart.TESmartMatrix):
         # TODO: should this be a queue?
         #  In theory this should be safe as the list itself should be consistent
         self.messages = []
-        self.last = time.time()
+        self.lastmsg = time.time()
 
     def loop(self):
         """
         Runs as part of the thread loop occasionally inserting messages into the data stream.
         """
         super().loop()
-        if (time.time() - self.last) > self.MESSAGE_INTERVAL:
+        if (time.time() - self.lastmsg) > self.MESSAGE_INTERVAL:
+            self.lastmsg = time.time()
             # Send a message if a message is ready
             if self.messages:
                 key, msg = self.messages.pop(0)
@@ -72,12 +73,28 @@ class ScaleMatrix(tesmart.TESmartMatrix):
         # Get the MAC address of the first interface
         mac = ":".join(re.findall("..", hex(uuid.getnode())[2:]))
         # Try to get the best IP address
-        ipadd = socket.gethostbyname(socket.gethostname())
-        if ipadd.startswith("127"):
-            ipadd = socket.gethostbyname(socket.getfqdn())
+        ipadd = self.get_ip_address()
         return [
             ("Host", socket.gethostname()),
             ("MAC", mac.upper()),
             ("IP", ipadd),
             (" !! ", "STARCH!!!!!!!!!"),
         ]
+
+    @staticmethod
+    def get_ip_address():
+        """ Connect to Google's DNS to Read the Public IP"""
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.connect(("8.8.8.8", 80))
+            return sock.getsockname()[0]
+        except:
+            pass
+        try:
+            ipadd = socket.gethostbyname(socket.gethostname())
+            if ipadd.startswith("127"):
+                ipadd = socket.gethostbyname(socket.getfqdn())
+            return ipadd
+        except:
+            pass
+        return "No Network?"
