@@ -15,7 +15,8 @@ Port numbers must be between 1 and n, where n is the driver's maximum number
 of input or output ports.
 """
 import logging
-
+import subprocess
+from pathlib import Path
 import flask
 import flask_restful
 import  flask_restful.reqparse
@@ -33,6 +34,8 @@ api = flask_restful.Api(app)
 messaging.setup_request()
 geometry = {key: value for key, value in messaging.send_recv({"command": "read"}).items()}
 
+BIN_DIR = Path(__file__).parent.parent.parent / "bin"
+assert BIN_DIR.exists(), "Could not find binary directory"
 
 def get_valid_port(port, ptype):
     """
@@ -112,9 +115,55 @@ class InputPort(flask_restful.Resource):
         return geometry["inputs"]
 
 
+class Stream(flask_restful.Resource):
+    """
+    Handles the room streaming implementations.
+
+    GET: what is streaming, or '' if nothing is streaming
+    PUT: start a stream with given room
+    DELETE: stop streaming
+    """
+    def __init__(self):
+        """
+        Constructor creates a request parser to check PUT data.
+        """
+        self.stream = None
+        self.parser = flask_restful.reqparse.RequestParser()
+        self.parser.add_argument("stream")
+
+    def get(self):  # pylint: disable=no-self-use
+        """
+        Returns the currently active stream or ''
+        """
+        return self.stream if self.stream else "", 200
+
+    def put(self):
+        """
+        Starts streaming. If already streaming, then stops before starting
+        Returns a 201 response if successful, else 500
+        """
+        if self.stream:
+            _, _ = self.delete()
+        args = self.parser.parse_args()
+        self.stream = args["stream"]
+        stream_uri = f"rtmp://{ self.stream }.scaleav.us:1935/scale/mixed"
+        logging.debug("Start stream=[%s]", stream_uri)
+        process_spec = subprocess.run([BIN_DIR / "start-stream-gst", stream_uri])
+        return stream_uri, 200 if process_spec.returncode == 0 else 500
+
+    def delete(self):
+        """
+        Stops the stream.
+        """
+        self.stream = None
+        process_spec = subprocess.run([BIN_DIR / "stop-stream"])
+        return "", 200 if process_spec.returncode == 0 else 500
+
+
 api.add_resource(InputPort, "/matrix/inputs")
 api.add_resource(OutputPortList, "/matrix/outputs")
 api.add_resource(OutputPort, "/matrix/output/<output_port>")
+api.add_resource(Stream, "/matrix/stream")
 
 @app.route('/<path:path>')
 def send_static_files(path):
